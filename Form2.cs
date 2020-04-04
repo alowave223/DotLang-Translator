@@ -21,6 +21,10 @@ namespace DotLangTranslator
             selectedItems.Add(selectedItem1.ToString().ToLower());
             selectedItems.Add(selectedItem2.ToString().ToLower());
             Close();
+            foreach (string s in selectedItems)
+            {
+                Console.WriteLine(s);
+            }
         }
     }
 }

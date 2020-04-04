@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
+using DotLangTranslator;
 
 namespace DotLangTranslator
 {
@@ -13,6 +14,7 @@ namespace DotLangTranslator
     {
         public List<string> formated = new List<string>();
         public string filePath = string.Empty;
+        public List<string> selected;
 
         public Form1()
         {
@@ -33,12 +35,12 @@ namespace DotLangTranslator
             {
                 Form2 select = new Form2();
                 select.ShowDialog();
+                selected = select.selectedItems;
             }
 
-            List<string> selected = new Form2().selectedItems;
-
-            if (selected.Count() <= 0)
+            if(selected == null)
             {
+                selected = new List<string>();
                 selected.Add("en");
                 selected.Add("ru");
             }
@@ -70,13 +72,14 @@ namespace DotLangTranslator
                         if (s.IndexOf('=') >= 0)
                         {
                             string text = WebUtility.UrlEncode(s.Substring(s.IndexOf('=') + 1));
-                            var che = Get($"https://translate.yandex.net/api/v1.5/tr.json/translate?key=trnsl.1.1.20200402T222348Z.6ce0f256c702bf80.98e1d734a9dcd384e34a8cb246fa3224ac709887&text={text}&lang={selected[0]}-{selected[1]}");
+                            var che = Get($"https://translate.yandex.net/api/v1.5/tr.json/translate?key=trnsl.1.1.20200402T222348Z.6ce0f256c702bf80.98e1d734a9dcd384e34a8cb246fa3224ac709887&text={text.ToLower()}&lang={selected[0]}-{selected[1]}");
                             formated.Add(che);
                         }
                     }
                     MessageBox.Show("Now select where to save!");
                     progressBar1.Visible = false;
                     label2.Visible = false;
+                    progressBar1.Value = 0;
                 }
             }            
         }
@@ -104,12 +107,13 @@ namespace DotLangTranslator
                         {                           
                             if(s.IndexOf("=") >= 0)
                             {
-                                sw.WriteLine(s.Replace(s.Substring(s.IndexOf("=") + 1), formated[index]));
+                                sw.WriteLine(s.Replace(s.Substring(s.IndexOf("=") + 1), formated[index].Substring(0,1).ToUpper() + formated[index].Substring(1)));
                                 index++;
                             }                            
                         }                        
                     }
                     MessageBox.Show("All is done!");
+                    formated.Clear();
                 }
             }
         }
